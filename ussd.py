@@ -16,15 +16,11 @@ unique = ['1','mars', 'elvis', 'Kori', 'brian','205']
     
 text =request.values.get("text", "default")#getting the request
 session_state = text.split('*')   
-
 # Create an MQTT client with id
 client_id= session_state[2]
 
-    # Create an MQTT client with the specified client ID
+# Create an MQTT client with the specified client ID
 client = mqtt.Client(client_id=client_id)
-#connecting the client to the server....the last parameter is the keep alive parameter
-client.connect("91.121.93.94", 1883, 60) 
-
 
 
 def search_id(identity, unique):
@@ -38,7 +34,59 @@ def make_request():
     # Perform an HTTP request
     url = data.get('url')
     response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/temp", 0)
     
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request1():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/humidity", 0)
+    
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request2():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/light", 0)
+    
+    
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request3():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/pH", 0)
+    
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request4():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/fertility", 0)
+    
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request5():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    client.subscribe (f"{session_state[2]}/moisture", 0)
+        
  # Define callback functions for  the server to the client when the client is requesting to subscribe to the server
 @app.route('/', methods=['POST', 'GET'])
 def on_connect(client, userdata, flags, rc):
@@ -89,14 +137,18 @@ def moisture_message(client, userdata, message):
 def on_publish(client, userdata, mid):
     return("Message published")
 
-
-
-    # Set callback functions
 @app.route('/', methods=['POST', 'GET'])
-def connectioins():
+def connected():
+
+    #connecting the client to the server....the last parameter is the keep alive parameter
+    client.connect("91.121.93.94", 1883, 60) 
     client.on_connect = on_connect
     client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
     client.on_publish = on_publish
+    client.loop_start()
+
+    # Set callback functions
+
     
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
@@ -105,7 +157,7 @@ def ussd_callback():
     session_id = request.values.get("sessionId", None)#/////getting the session id
     service_code = request.values.get("serviceCode", None)#//////////getting the service code
     #phone_number = request.values.get("phoneNumber", None)#getting the phone number that requested
-   
+    connected()
     
     current_level = len(session_state)
     if current_level == 1:
@@ -134,50 +186,46 @@ def ussd_callback():
             response = "END Kindly stop lying and go buy the device."
         
     elif current_level== 4 and session_state[3] == '1':
-        client.loop_forever()
         make_request()
-        client.subscribe (f"{session_state[2]}/temp", 0)
+        
         #   temperature= '45.2'
         #response=f"Your temperature is {temperature}. This is suitable for crops such as grapes, sukumawiki, sweatpotatoes, peanut"
         
         
         
     elif current_level== 4 and session_state [3]== '2':
-        client.subscribe (f"{session_state[2]}/humidity", 0)
-        client.loop_forever()
-        make_request()
+        make_request1()
         
         #humidity ='68.5'
         #response = "END Your Humidity is " + humidity + " This humidity is too low for your plants. E-Shamba suggest you set up a green house around the plant or switch to crops such as fruitnuts, watermellon which can thrive perfectly in our farm under this humidity."
         
     elif current_level== 4 and session_state[3] == '3':
-        client.loop_forever()
-        make_request()
-        client.subscribe (f"{session_state[2]}/light", 0)
+        make_request2()
        #lght='20%'
        #response= "END Your light intensity is " +lght
         
     elif current_level== 4 and session_state[3] == '4':
-        client.loop_forever()
-        make_request()
-        client.subscribe (f"{session_state[2]}/pH", 0)
+        
+        make_request3()
+        
         #phval='7'
         #response ="END Your pH is " +phval +" .This means your soil is acidic and capable of growing crops such as tea, coffee, blueberries"
         
     elif current_level== 4 and session_state [3]== '5':
-        client.loop_forever()
-        make_request()
-        client.subscribe (f"{session_state[2]}/fertility", 0)
+      
+        make_request4()
+        
         #fertlvl='50%'
         #response ="END your soil fertility level is " +fertlvl + " kindly add nitrogeneous fertilisers to make it better and also phospatic fertilisers."
         
     elif current_level== 4 and session_state[3] == '6':
-        client.loop_forever()
-        make_request()
-        client.subscribe (f"{session_state[2]}/moisture", 0)
+        
+        make_request5()
+        
         #soilmoi='20%'
         #response ="END Your soil moisture content is "+soilmoi +" kindly add water"
     
+
     return response
 
 #Receive response from africas talking
