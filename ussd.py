@@ -82,6 +82,7 @@ def on_publish(client, userdata, mid):
     return("Message published")
 
 
+
 # Set callback functions
 client.on_connect = on_connect
 client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
