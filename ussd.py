@@ -124,7 +124,7 @@ def ussd_callback():
         
     elif current_level== 4 and session_state[3] == '1':
         client.loop_forever()
-        make_request()
+        make_request(request)
         client.subscribe (f"{session_state[2]}/temp", 0)
         #   temperature= '45.2'
         #response=f"Your temperature is {temperature}. This is suitable for crops such as grapes, sukumawiki, sweatpotatoes, peanut"
@@ -134,35 +134,35 @@ def ussd_callback():
     elif current_level== 4 and session_state [3]== '2':
         client.subscribe (f"{session_state[2]}/humidity", 0)
         client.loop_forever()
-        make_request()
+        make_request(request)
         
         #humidity ='68.5'
         #response = "END Your Humidity is " + humidity + " This humidity is too low for your plants. E-Shamba suggest you set up a green house around the plant or switch to crops such as fruitnuts, watermellon which can thrive perfectly in our farm under this humidity."
         
     elif current_level== 4 and session_state[3] == '3':
         client.loop_forever()
-        make_request()
+        make_request(request)
         client.subscribe (f"{session_state[2]}/light", 0)
        #lght='20%'
        #response= "END Your light intensity is " +lght
         
     elif current_level== 4 and session_state[3] == '4':
         client.loop_forever()
-        make_request()
+        make_request(request)
         client.subscribe (f"{session_state[2]}/pH", 0)
         #phval='7'
         #response ="END Your pH is " +phval +" .This means your soil is acidic and capable of growing crops such as tea, coffee, blueberries"
         
     elif current_level== 4 and session_state [3]== '5':
         client.loop_forever()
-        make_request()
+        make_request(request)
         client.subscribe (f"{session_state[2]}/fertility", 0)
         #fertlvl='50%'
         #response ="END your soil fertility level is " +fertlvl + " kindly add nitrogeneous fertilisers to make it better and also phospatic fertilisers."
         
     elif current_level== 4 and session_state[3] == '6':
         client.loop_forever()
-        make_request()
+        make_request(request)
         client.subscribe (f"{session_state[2]}/moisture", 0)
         #soilmoi='20%'
         #response ="END Your soil moisture content is "+soilmoi +" kindly add water"
