@@ -13,8 +13,31 @@ import os
 
 response = ""
 unique = ['1','mars', 'elvis', 'Kori', 'brian','205']
+    
+text =request.values.get("text", "default")#getting the request
+session_state = text.split('*')   
 
 
+
+def search_id(identity, unique):
+    return identity in unique
+
+@app.route('/make_request', methods=['POST', 'GET'])
+def make_request():
+    # Get the JSON data from the request body
+    data = request.get_json()
+
+    # Perform an HTTP request
+    url = data.get('url')
+    response = requests.get(url)
+    
+# Create an MQTT client with id
+client_id= session_state[2]
+
+# Create an MQTT client with the specified client ID
+client = mqtt.Client(client_id=client_id)
+#connecting the client to the server....the last parameter is the keep alive parameter
+client.connect("91.121.93.94", 1883, 60) 
 
 # Define callback functions for  the server to the client when the client is requesting to subscribe to the server
 def on_connect(client, userdata, flags, rc):
@@ -23,9 +46,8 @@ def on_connect(client, userdata, flags, rc):
         
     else :
         print(f"Connection failed with code {rc}")
-        
-        
-# Define callback when subscribing      
+    
+    # Define callback when subscribing      
 def temp_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/temp":
         answer = json.loads(message.payload.decode())
@@ -58,33 +80,12 @@ def moisture_message(client, userdata, message):
     
 def on_publish(client, userdata, mid):
     return("Message published")
-    
-text =request.values.get("text", "default")#getting the request
-session_state = text.split('*')   
-# Create an MQTT client with id
-client_id= session_state[2]
 
-# Create an MQTT client with the specified client ID
-client = mqtt.Client(client_id=client_id)
-#connecting the client to the server....the last parameter is the keep alive parameter
-client.connect("91.121.93.94", 1883, 60) 
 
 # Set callback functions
 client.on_connect = on_connect
 client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
 client.on_publish = on_publish
-
-def search_id(identity, unique):
-    return identity in unique
-
-@app.route('/make_request', methods=['POST'])
-def make_request():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
     
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
