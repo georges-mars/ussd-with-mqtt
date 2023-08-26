@@ -92,9 +92,11 @@ def on_publish(client, userdata, mid):
 
 
     # Set callback functions
-client.on_connect = on_connect
-client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
-client.on_publish = on_publish
+@app.route('/', methods=['POST', 'GET'])
+def connectioins():
+    client.on_connect = on_connect
+    client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
+    client.on_publish = on_publish
     
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
