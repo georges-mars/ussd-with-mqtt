@@ -1,6 +1,3 @@
-
-#ussd code is *384*48545#
-
 #my code
 from flask import Flask, request
 
@@ -36,7 +33,7 @@ def make_request():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/temp", 0)
     
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route('/make_request1', methods=['POST', 'GET'])
 def make_request1():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -46,7 +43,7 @@ def make_request1():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/humidity", 0)
     
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route('/make_request2', methods=['POST', 'GET'])
 def make_request2():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -57,7 +54,7 @@ def make_request2():
     client.subscribe (f"{session_state[2]}/light", 0)
     
     
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route('/make_request3', methods=['POST', 'GET'])
 def make_request3():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -67,7 +64,7 @@ def make_request3():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/pH", 0)
     
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route('/make_request4', methods=['POST', 'GET'])
 def make_request4():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -77,7 +74,7 @@ def make_request4():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/fertility", 0)
     
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route('/make_request5', methods=['POST', 'GET'])
 def make_request5():
     # Get the JSON data from the request body
     data = request.get_json()
