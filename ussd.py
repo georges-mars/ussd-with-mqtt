@@ -134,7 +134,7 @@ def moisture_message(client, userdata, message):
 def on_publish(client, userdata, mid):
     return("Message published")
 
-@app.route('/connected', methods=['POST', 'GET'])
+@app.route('/url', methods=['POST', 'GET'])
 def connected():
 
     #connecting the client to the server....the last parameter is the keep alive parameter
