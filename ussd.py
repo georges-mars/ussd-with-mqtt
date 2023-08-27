@@ -23,7 +23,7 @@ client = mqtt.Client(client_id=client_id)
 def search_id(identity, unique):
     return identity in unique
 
-@app.route('/make_request', methods=['POST', 'GET'])
+@app.route(f'/make_request/{session_state[2]}', methods=['POST', 'GET'])
 def make_request():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -33,7 +33,7 @@ def make_request():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/temp", 0)
     
-@app.route('/make_request1', methods=['POST', 'GET'])
+@app.route(f'/make_request1/{session_state[2]}', methods=['POST', 'GET'])
 def make_request1():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -43,7 +43,7 @@ def make_request1():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/humidity", 0)
     
-@app.route('/make_request2', methods=['POST', 'GET'])
+@app.route(f'/make_request2/{session_state[2]}', methods=['POST', 'GET'])
 def make_request2():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -54,7 +54,7 @@ def make_request2():
     client.subscribe (f"{session_state[2]}/light", 0)
     
     
-@app.route('/make_request3', methods=['POST', 'GET'])
+@app.route(f'/make_request3/{session_state[2]}', methods=['POST', 'GET'])
 def make_request3():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -64,7 +64,7 @@ def make_request3():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/pH", 0)
     
-@app.route('/make_request4', methods=['POST', 'GET'])
+@app.route(f'/make_request4/{session_state[2]}', methods=['POST', 'GET'])
 def make_request4():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -74,7 +74,7 @@ def make_request4():
     response = requests.get(url)
     client.subscribe (f"{session_state[2]}/fertility", 0)
     
-@app.route('/make_request5', methods=['POST', 'GET'])
+@app.route(f'/make_request5/{session_state[2]}', methods=['POST', 'GET'])
 def make_request5():
     # Get the JSON data from the request body
     data = request.get_json()
@@ -94,47 +94,47 @@ def on_connect(client, userdata, flags, rc):
         print(f"Connection failed with code {rc}")
     
     # Define callback when subscribing      
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/url', methods=['POST', 'GET'])
 def temp_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/temp":
         answer = json.loads(message.payload.decode())
         return (f"END Your temperature is {answer}")
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/url', methods=['POST', 'GET'])
 def humidity_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/humidity":
         answer = json.loads(message.payload.decode())
         return(f"END Your humidity level is {answer}")
  
-@app.route('/', methods=['POST', 'GET'])   
+@app.route('/url', methods=['POST', 'GET'])   
 def light_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/light":
         answer = json.loads(message.payload.decode())
         return(f"END Your light level is {answer}")
 
-@app.route('/', methods=['POST', 'GET'])   
+@app.route('/url', methods=['POST', 'GET'])   
 def pH_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/pH":
         answer = json.loads(message.payload.decode())
         return(f"END Your pH level is {answer}")    
 
-@app.route('/', methods=['POST', 'GET'])    
+@app.route('/url', methods=['POST', 'GET'])    
 def fertility_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/fertility":
         answer = json.loads(message.payload.decode())
         return(f"END Your fertility level is {answer}")
  
-@app.route('/', methods=['POST', 'GET'])   
+@app.route('/url', methods=['POST', 'GET'])   
 def moisture_message(client, userdata, message):
     if message.topic == f"{session_state[2]}/moisture":
         answer = json.loads(message.payload.decode())
         return(f"END Your moisture level is {answer}")
 
-@app.route('/', methods=['POST', 'GET'])    
+@app.route('/url', methods=['POST', 'GET'])    
 def on_publish(client, userdata, mid):
     return("Message published")
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/connected', methods=['POST', 'GET'])
 def connected():
 
     #connecting the client to the server....the last parameter is the keep alive parameter
