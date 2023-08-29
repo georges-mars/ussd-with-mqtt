@@ -30,7 +30,7 @@ def ussd_callback():
     #phone_number = request.values.get("phoneNumber", None)#getting the phone number that requested
     text =request.values.get("text", "default")#getting the request
     session_state = text.split('*')  
-    connected()
+    
     current_level = len(session_state)
     
         # Create an MQTT client with id
@@ -147,7 +147,7 @@ def ussd_callback():
 
     # Set callback functions
 
-        
+    connected()
     
     if current_level == 1:
         response  = "CON Hello and welcome to E-shamba. Have you bought the device from our trusted dealerships shops\n"
