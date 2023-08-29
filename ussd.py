@@ -34,10 +34,10 @@ def ussd_callback():
     current_level = len(session_state)
     
         # Create an MQTT client with id
-    client_id= session_state[2]
+    
 
     # Create an MQTT client with the specified client ID
-    client = mqtt.Client(client_id=client_id)
+    client = mqtt.Client()
 
     def make_request():
     # Get the JSON data from the request body
@@ -136,18 +136,14 @@ def ussd_callback():
     def on_publish(client, userdata, mid):
         return("Message published")
     
-    def connected():
+
 
     #connecting the client to the server....the last parameter is the keep alive parameter
-        client.connect(" ", 1883, 30) 
-        client.on_connect = on_connect
-        client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
-        client.on_publish = on_publish
-        client.loop_start()
-
-    # Set callback functions
-
-    connected()
+    
+    client.on_connect = on_connect
+    client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
+    client.on_publish = on_publish
+    
     
     if current_level == 1:
         response  = "CON Hello and welcome to E-shamba. Have you bought the device from our trusted dealerships shops\n"
@@ -157,6 +153,10 @@ def ussd_callback():
     elif current_level == 2 and session_state[1] == '1':
         response = "CON Hello and thank you  for trusting e-shamba into you farm. Prepare to increase your yields by 90%\n"
         response += "Kindly input your unique ID. It is located on the LEFT HAND SIDE of your device"
+        new_client_id= session_state[2]
+        client.client_id = new_client_id
+        client.connect("test.mosquitto.org", 1883, 30) 
+        client.loop_start()
         
     elif current_level ==2 and session_state[1]== '2':
         response = "END Kindly go to the nearest dealershops and buy the device"
