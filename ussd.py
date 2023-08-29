@@ -1,6 +1,6 @@
 #my code
 from flask import Flask, request
-
+import threading 
 import paho.mqtt.client as mqtt
 import requests
 import json
@@ -11,20 +11,56 @@ import os
 response = ""
 unique = ['1','mars', 'elvis', 'Kori', 'brian','205', 'keith']
     
- 
-
-
+mqtt_data = {}
 
 def search_id(identity, unique):
     return identity in unique
 
+
+
+def start_mqtt_subscriber():
+    client = mqtt.Client()
+    
+    
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT broker")
+            client.subscribe("temp")  # Subscribe to all topics under the client's ID
+            client.subscribe("humidity")
+            client.subscribe("light")
+            client.subscribe("pH")
+            client.subscribe("fertility")
+            client.subscribe("moisture")
+        else:
+            print(f"Connection failed with code {rc}")
+    
+    def on_message(client, userdata, message):
+        topic = message.topic
+        payload = message.payload.decode()
+        print(f"Received message on topic: {topic}, payload: {payload}")
+        # Process the incoming MQTT message here
         
+    
+    
+
+    client.on_connect = on_connect
+    client.on_message = on_message
+   
+    
+    
+    broker_address = "test.mosquitto.org"  # Replace with your broker's address
+    client.connect(broker_address, 1883, 30)
+    
+    # Start the MQTT subscriber loop
+    client.loop_forever()
+       
 
     
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
     global response
+    global mqtt_data
     session_id = request.values.get("sessionId", None)#/////getting the session id
     service_code = request.values.get("serviceCode", None)#//////////getting the service code
     #phone_number = request.values.get("phoneNumber", None)#getting the phone number that requested
@@ -32,118 +68,8 @@ def ussd_callback():
     session_state = text.split('*')  
     
     current_level = len(session_state)
-    
-        # Create an MQTT client with id
-    initial_client_id = "10"
-    client = mqtt.Client(client_id=initial_client_id)
-
-    # Create an MQTT client with the specified client ID
-    client = mqtt.Client()
-
-    def make_request():
-    # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/temp", 0)
-        
-        
-    def make_request1():
-    # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/humidity", 0)
-        
-    def make_request2():
-        # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/light", 0)
-        
-        
-    def make_request3():
-    # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/pH", 0)
-        
-        
-    def make_request4():
-        # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/fertility", 0)
-        
-    def make_request5():
-        # Get the JSON data from the request body
-        data = request.get_json()
-
-        # Perform an HTTP request
-        url = data.get('url')
-        response = requests.get(url)
-        client.subscribe (f"{session_state[2]}/moisture", 0)
-        
-    def on_connect(client, userdata, flags, rc):
-        if rc == 0:
-            print("Connected to MQTT broker")
-            
-        else :
-            print(f"Connection failed with code {rc}")
-            
-    def temp_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/temp":
-            answer = json.loads(message.payload.decode())
-            return (f"END Your temperature is {answer}")
-        
-    def humidity_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/humidity":
-            answer = json.loads(message.payload.decode())
-            return(f"END Your humidity level is {answer}")
-        
-    def light_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/light":
-            answer = json.loads(message.payload.decode())
-            return(f"END Your light level is {answer}")
-
-    def pH_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/pH":
-            answer = json.loads(message.payload.decode())
-            return(f"END Your pH level is {answer}")    
-        
-    def fertility_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/fertility":
-            answer = json.loads(message.payload.decode())
-            return(f"END Your fertility level is {answer}")
- 
-    def moisture_message(client, userdata, message):
-        if message.topic == f"{session_state[2]}/moisture":
-            answer = json.loads(message.payload.decode())
-            return(f"END Your moisture level is {answer}")
-        
-    def on_publish(client, userdata, mid):
-        return("Message published")
-    
-
-
     #connecting the client to the server....the last parameter is the keep alive parameter
     
-    client.on_connect = on_connect
-    client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
-    client.on_publish = on_publish
     
     
     if current_level == 1:
@@ -161,10 +87,8 @@ def ussd_callback():
             
     elif current_level == 3:
         if search_id(session_state[2],unique):
-            new_client_id= session_state[2]
-            client._client_id = new_client_id
-            client.connect("test.mosquitto.org", 1883, 30) 
-            client.loop_start()
+            
+            
             response = "CON Hello and Welcome " +session_state[2]+" what do you want to access?\n"
             response += "1.Current temp\n"
             response += "2.Current humidity\n"
@@ -177,7 +101,11 @@ def ussd_callback():
             response = "END Kindly stop lying and go buy the device."
         
     elif current_level== 4 and session_state[3] == '1':
-        make_request()
+        if "temp" in mqtt_data:
+            temperature = mqtt_data["temp"]
+            response = f"END Your temperature is {temperature}"
+        else:
+            response = "END Temperature data not available"
         
         #   temperature= '45.2'
         #response=f"Your temperature is {temperature}. This is suitable for crops such as grapes, sukumawiki, sweatpotatoes, peanut"
@@ -185,33 +113,53 @@ def ussd_callback():
         
         
     elif current_level== 4 and session_state [3]== '2':
-        make_request1()
+        if "humidity" in mqtt_data:
+            humidity = mqtt_data["humidity"]
+            response = f"END Your humidity is {humidity}"
+        else:
+            response = "END humidity data not available"
         
         #humidity ='68.5'
         #response = "END Your Humidity is " + humidity + " This humidity is too low for your plants. E-Shamba suggest you set up a green house around the plant or switch to crops such as fruitnuts, watermellon which can thrive perfectly in our farm under this humidity."
         
     elif current_level== 4 and session_state[3] == '3':
-        make_request2()
+        if "light" in mqtt_data:
+            light = mqtt_data["light"]
+            response = f"END Your light is {light}"
+        else:
+            response = "END light data not available"
        #lght='20%'
        #response= "END Your light intensity is " +lght
         
     elif current_level== 4 and session_state[3] == '4':
         
-        make_request3()
+        if "pH" in mqtt_data:
+            pH = mqtt_data["pH"]
+            response = f"END Your pH is {pH}"
+        else:
+            response = "END pH data not available"
         
         #phval='7'
         #response ="END Your pH is " +phval +" .This means your soil is acidic and capable of growing crops such as tea, coffee, blueberries"
         
     elif current_level== 4 and session_state [3]== '5':
       
-        make_request4()
+        if "fertility" in mqtt_data:
+            fertility = mqtt_data["fertility"]
+            response = f"END Your fertility is {fertility}"
+        else:
+            response = "END fertility data not available"
         
         #fertlvl='50%'
         #response ="END your soil fertility level is " +fertlvl + " kindly add nitrogeneous fertilisers to make it better and also phospatic fertilisers."
         
     elif current_level== 4 and session_state[3] == '6':
         
-        make_request5()
+        if "moisture" in mqtt_data:
+            moisture = mqtt_data["moisture"]
+            response = f"END Your moisture is {moisture}"
+        else:
+            response = "END moisture data not available"
         
         #soilmoi='20%'
         #response ="END Your soil moisture content is "+soilmoi +" kindly add water"
