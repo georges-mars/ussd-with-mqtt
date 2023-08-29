@@ -154,16 +154,17 @@ def ussd_callback():
     elif current_level == 2 and session_state[1] == '1':
         response = "CON Hello and thank you  for trusting e-shamba into you farm. Prepare to increase your yields by 90%\n"
         response += "Kindly input your unique ID. It is located on the LEFT HAND SIDE of your device"
-        new_client_id= session_state[2]
-        client._client_id = new_client_id
-        client.connect("test.mosquitto.org", 1883, 30) 
-        client.loop_start()
+        
         
     elif current_level ==2 and session_state[1]== '2':
         response = "END Kindly go to the nearest dealershops and buy the device"
             
     elif current_level == 3:
         if search_id(session_state[2],unique):
+            new_client_id= session_state[2]
+            client._client_id = new_client_id
+            client.connect("test.mosquitto.org", 1883, 30) 
+            client.loop_start()
             response = "CON Hello and Welcome " +session_state[2]+" what do you want to access?\n"
             response += "1.Current temp\n"
             response += "2.Current humidity\n"
