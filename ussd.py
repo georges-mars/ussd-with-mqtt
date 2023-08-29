@@ -9,154 +9,146 @@ app = Flask(__name__)
 import os
 
 response = ""
-unique = ['1','mars', 'elvis', 'Kori', 'brian','205']
+unique = ['1','mars', 'elvis', 'Kori', 'brian','205', 'keith']
     
-text =request.values.get("text", "default")#getting the request
-session_state = text.split('*')   
-# Create an MQTT client with id
-client_id= session_state[2]
+ 
 
-# Create an MQTT client with the specified client ID
-client = mqtt.Client(client_id=client_id)
 
 
 def search_id(identity, unique):
     return identity in unique
 
-@app.route(f'/make_request/{session_state[2]}', methods=['POST', 'GET'])
-def make_request():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/temp", 0)
-    
-@app.route(f'/make_request1/{session_state[2]}', methods=['POST', 'GET'])
-def make_request1():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/humidity", 0)
-    
-@app.route(f'/make_request2/{session_state[2]}', methods=['POST', 'GET'])
-def make_request2():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/light", 0)
-    
-    
-@app.route(f'/make_request3/{session_state[2]}', methods=['POST', 'GET'])
-def make_request3():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/pH", 0)
-    
-@app.route(f'/make_request4/{session_state[2]}', methods=['POST', 'GET'])
-def make_request4():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/fertility", 0)
-    
-@app.route(f'/make_request5/{session_state[2]}', methods=['POST', 'GET'])
-def make_request5():
-    # Get the JSON data from the request body
-    data = request.get_json()
-
-    # Perform an HTTP request
-    url = data.get('url')
-    response = requests.get(url)
-    client.subscribe (f"{session_state[2]}/moisture", 0)
         
- # Define callback functions for  the server to the client when the client is requesting to subscribe to the server
-@app.route('/', methods=['POST', 'GET'])
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("Connected to MQTT broker")
-        
-    else :
-        print(f"Connection failed with code {rc}")
-    
-    # Define callback when subscribing      
-@app.route('/url', methods=['POST', 'GET'])
-def temp_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/temp":
-        answer = json.loads(message.payload.decode())
-        return (f"END Your temperature is {answer}")
-
-@app.route('/url', methods=['POST', 'GET'])
-def humidity_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/humidity":
-        answer = json.loads(message.payload.decode())
-        return(f"END Your humidity level is {answer}")
- 
-@app.route('/url', methods=['POST', 'GET'])   
-def light_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/light":
-        answer = json.loads(message.payload.decode())
-        return(f"END Your light level is {answer}")
-
-@app.route('/url', methods=['POST', 'GET'])   
-def pH_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/pH":
-        answer = json.loads(message.payload.decode())
-        return(f"END Your pH level is {answer}")    
-
-@app.route('/url', methods=['POST', 'GET'])    
-def fertility_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/fertility":
-        answer = json.loads(message.payload.decode())
-        return(f"END Your fertility level is {answer}")
- 
-@app.route('/url', methods=['POST', 'GET'])   
-def moisture_message(client, userdata, message):
-    if message.topic == f"{session_state[2]}/moisture":
-        answer = json.loads(message.payload.decode())
-        return(f"END Your moisture level is {answer}")
-
-@app.route('/url', methods=['POST', 'GET'])    
-def on_publish(client, userdata, mid):
-    return("Message published")
-
-@app.route('/url', methods=['POST', 'GET'])
-def connected():
-
-    #connecting the client to the server....the last parameter is the keep alive parameter
-    client.connect("91.121.93.94", 1883, 60) 
-    client.on_connect = on_connect
-    client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
-    client.on_publish = on_publish
-    client.loop_start()
-
-    # Set callback functions
 
     
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
-    #global response
+    global response
     session_id = request.values.get("sessionId", None)#/////getting the session id
     service_code = request.values.get("serviceCode", None)#//////////getting the service code
     #phone_number = request.values.get("phoneNumber", None)#getting the phone number that requested
+    text =request.values.get("text", "default")#getting the request
+    session_state = text.split('*')  
     connected()
-    
     current_level = len(session_state)
+    
+        # Create an MQTT client with id
+    client_id= session_state[2]
+
+    # Create an MQTT client with the specified client ID
+    client = mqtt.Client(client_id=client_id)
+
+    def make_request():
+    # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/temp", 0)
+        
+        
+    def make_request1():
+    # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/humidity", 0)
+        
+    def make_request2():
+        # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/light", 0)
+        
+        
+    def make_request3():
+    # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/pH", 0)
+        
+        
+    def make_request4():
+        # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/fertility", 0)
+        
+    def make_request5():
+        # Get the JSON data from the request body
+        data = request.get_json()
+
+        # Perform an HTTP request
+        url = data.get('url')
+        response = requests.get(url)
+        client.subscribe (f"{session_state[2]}/moisture", 0)
+        
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT broker")
+            
+        else :
+            print(f"Connection failed with code {rc}")
+            
+    def temp_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/temp":
+            answer = json.loads(message.payload.decode())
+            return (f"END Your temperature is {answer}")
+        
+    def humidity_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/humidity":
+            answer = json.loads(message.payload.decode())
+            return(f"END Your humidity level is {answer}")
+        
+    def light_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/light":
+            answer = json.loads(message.payload.decode())
+            return(f"END Your light level is {answer}")
+
+    def pH_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/pH":
+            answer = json.loads(message.payload.decode())
+            return(f"END Your pH level is {answer}")    
+        
+    def fertility_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/fertility":
+            answer = json.loads(message.payload.decode())
+            return(f"END Your fertility level is {answer}")
+ 
+    def moisture_message(client, userdata, message):
+        if message.topic == f"{session_state[2]}/moisture":
+            answer = json.loads(message.payload.decode())
+            return(f"END Your moisture level is {answer}")
+        
+    def on_publish(client, userdata, mid):
+        return("Message published")
+    
+    def connected():
+
+    #connecting the client to the server....the last parameter is the keep alive parameter
+        client.connect(" ", 1883, 30) 
+        client.on_connect = on_connect
+        client.on_message = [temp_message, humidity_message, light_message, pH_message, fertility_message, moisture_message]
+        client.on_publish = on_publish
+        client.loop_start()
+
+    # Set callback functions
+
+        
+    
     if current_level == 1:
         response  = "CON Hello and welcome to E-shamba. Have you bought the device from our trusted dealerships shops\n"
         response += "1. Yes\n"
@@ -224,6 +216,8 @@ def ussd_callback():
     
 
     return response
+
+    
 
 #Receive response from africas talking
 @app.route('/call', methods=['POST'])
