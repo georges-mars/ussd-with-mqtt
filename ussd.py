@@ -34,7 +34,8 @@ def ussd_callback():
     current_level = len(session_state)
     
         # Create an MQTT client with id
-    
+    initial_client_id = "10"
+    client = mqtt.Client(client_id=initial_client_id)
 
     # Create an MQTT client with the specified client ID
     client = mqtt.Client()
@@ -154,7 +155,7 @@ def ussd_callback():
         response = "CON Hello and thank you  for trusting e-shamba into you farm. Prepare to increase your yields by 90%\n"
         response += "Kindly input your unique ID. It is located on the LEFT HAND SIDE of your device"
         new_client_id= session_state[2]
-        client.client_id = new_client_id
+        client._client_id = new_client_id
         client.connect("test.mosquitto.org", 1883, 30) 
         client.loop_start()
         
