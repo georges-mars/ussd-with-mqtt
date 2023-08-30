@@ -27,7 +27,7 @@ def start_mqtt_subscriber():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             
-            client.subscribe("temp ",0)  # Subscribe to all topics under the client's ID
+            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
             client.subscribe("humidity",0)
             client.subscribe("light",0)
             client.subscribe("pH",0)
@@ -135,7 +135,7 @@ def ussd_callback():
     elif current_level== 4 and session_state [3]== '2':
         if "humidity" in mqtt_data:
             humidity = mqtt_data["humidity"]
-            response = f"END Your humidity is {humidity}"
+            response = "END Your humidity is "+humidity
         else:
             response = "END humidity data not available"
         
