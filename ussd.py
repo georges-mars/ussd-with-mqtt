@@ -32,14 +32,14 @@ def start_mqtt_subscriber():
             client.subscribe("pH")
             client.subscribe("fertility")
             client.subscribe("moisture")
-            return("Connected to MQTT broker")
+            print("Connected to MQTT broker")
         else:
             print(f"Connection failed with code {rc}")
     
     def on_message(client, userdata, message):
         topic = message.topic
         payload = message.payload.decode()
-        return(f"Received message on topic: {topic}, payload: {payload}")
+        print(f"Received message on topic: {topic}, payload: {payload}")
         # Process the incoming MQTT message here
         
     
