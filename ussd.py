@@ -19,7 +19,8 @@ def search_id(identity, unique):
 
 
 def start_mqtt_subscriber():
-    client = mqtt.Client()
+    client = mqtt.Client(client_id="14")
+    
     
     
     def on_connect(client, userdata, flags, rc):
