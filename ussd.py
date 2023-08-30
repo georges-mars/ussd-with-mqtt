@@ -26,12 +26,12 @@ def start_mqtt_subscriber():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             
-            client.subscribe("temp")  # Subscribe to all topics under the client's ID
-            client.subscribe("humidity")
-            client.subscribe("light")
-            client.subscribe("pH")
-            client.subscribe("fertility")
-            client.subscribe("moisture")
+            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
+            client.subscribe("humidity",0)
+            client.subscribe("light",0)
+            client.subscribe("pH",0)
+            client.subscribe("fertility",0)
+            client.subscribe("moisture",0)
             print("Connected to MQTT broker")
         else:
             print(f"Connection failed with code {rc}")
@@ -43,15 +43,15 @@ def start_mqtt_subscriber():
         # Process the incoming MQTT message here
         
     
-    
+    broker_address = "test.mosquitto.org"  # Replace with your broker's address
+    client.connect(broker_address, 1883, 30)
 
     client.on_connect = on_connect
     client.on_message = on_message
    
     
     
-    broker_address = "test.mosquitto.org"  # Replace with your broker's address
-    client.connect(broker_address, 1883, 30)
+    
     
     # Start the MQTT subscriber loop
     client.loop_forever()
