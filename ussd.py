@@ -26,7 +26,7 @@ def start_mqtt_subscriber():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
             
-            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
+            client.subscribe("temp ",0)  # Subscribe to all topics under the client's ID
             client.subscribe("humidity",0)
             client.subscribe("light",0)
             client.subscribe("pH",0)
@@ -40,6 +40,23 @@ def start_mqtt_subscriber():
         topic = message.topic
         payload = message.payload.decode()
         print(f"Received message on topic: {topic}, payload: {payload}")
+        if message.topic == "temp":
+            mqtt_data["temp"]=payload
+            
+        if message.topic == "humidity":
+            mqtt_data["humidity"]=payload
+            
+        if message.topic == "light":
+            mqtt_data["light"]=payload
+            
+        if message.topic == "pH":
+            mqtt_data["pH"]=payload
+            
+        if message.topic == "fertility":
+            mqtt_data["fertility"]=payload
+            
+        if message.topic == "moisture":
+            mqtt_data["moisture"]=payload
         # Process the incoming MQTT message here
         
     
