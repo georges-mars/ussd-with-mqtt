@@ -19,7 +19,8 @@ def search_id(identity, unique):
 
 
 def start_mqtt_subscriber():
-    client = mqtt.Client(client_id="14")
+    clientid="14"
+    client = mqtt.Client(client_id=clientid)
     
     
     
@@ -40,22 +41,22 @@ def start_mqtt_subscriber():
         topic = message.topic
         payload = message.payload.decode()
         print(f"Received message on topic: {topic}, payload: {payload}")
-        if message.topic == "temp":
+        if topic == "temp":
             mqtt_data["temp"]=payload
             
-        if message.topic == "humidity":
+        if topic == "humidity":
             mqtt_data["humidity"]=payload
             
-        if message.topic == "light":
+        if topic == "light":
             mqtt_data["light"]=payload
             
-        if message.topic == "pH":
+        if topic == "pH":
             mqtt_data["pH"]=payload
             
-        if message.topic == "fertility":
+        if topic == "fertility":
             mqtt_data["fertility"]=payload
             
-        if message.topic == "moisture":
+        if topic == "moisture":
             mqtt_data["moisture"]=payload
         # Process the incoming MQTT message here
         
@@ -87,7 +88,7 @@ def ussd_callback():
     session_state = text.split('*')  
     
     current_level = len(session_state)
-    #connecting the client to the server....the last parameter is the keep alive parameter
+    
     
     
     
@@ -195,7 +196,7 @@ def call_back_client():
 
 
 if __name__ == '__main__':
-    mqtt_thread = threading.Thread(target=start_mqtt_subscriber)
+    mqtt_thread = threading.Thread(target=start_mqtt_subscriber())
     mqtt_thread.daemon = True  # Daemonize the thread so it exits when the main thread exits
     mqtt_thread.start()
     app.run(host="0.0.0.0", port=os.environ.get('PORT'))
