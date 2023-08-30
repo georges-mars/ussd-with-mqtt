@@ -37,7 +37,7 @@ def start_mqtt_subscriber():
     def on_message(client, userdata, message):
         topic = message.topic
         payload = message.payload.decode()
-        print(f"Received message on topic: {topic}, payload: {payload}")
+        return(f"Received message on topic: {topic}, payload: {payload}")
         # Process the incoming MQTT message here
         
     
