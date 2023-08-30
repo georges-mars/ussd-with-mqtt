@@ -25,7 +25,7 @@ def start_mqtt_subscriber():
     
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            print("Connected to MQTT broker")
+            return("Connected to MQTT broker")
             client.subscribe("temp")  # Subscribe to all topics under the client's ID
             client.subscribe("humidity")
             client.subscribe("light")
