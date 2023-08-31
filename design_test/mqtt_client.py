@@ -1,0 +1,84 @@
+#my code
+from flask import Flask, request
+import threading 
+import paho.mqtt.client as mqtt
+import requests
+import json
+
+import os
+
+response = ""
+    
+mqtt_data = {}
+
+def start_mqtt_subscriber():
+    clientid="14"
+    client = mqtt.Client(client_id=clientid)
+
+    def on_connect(client, userdata, flags, rc):
+        if rc == 0:
+            # data = request.get_json()
+        # Perform an HTTP request
+            # url = data.get('url')
+            # response = requests.get(url)
+            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
+            client.subscribe("humidity",0)
+            client.subscribe("light",0)
+            client.subscribe("pH",0)
+            client.subscribe("fertility",0)
+            client.subscribe("moisture",0)
+            client.subscribe("trial",0)
+            
+            print("Connected to MQTT broker")
+            
+        else:
+            print(f"Connection failed with code {rc}")
+    
+    def on_message(client, userdata, message):
+        
+        topic = message.topic
+        answer = message.payload.decode()
+        #payload = message.payload.decode()
+        print(f"Received message on topic: {topic}, payload: {answer}")
+        if topic == "temp":
+            mqtt_data["temp"]=answer
+            
+        if topic == "humidity":
+            mqtt_data["humidity"]=answer
+            
+        if topic == "light":
+            mqtt_data["light"]=answer
+            
+        if topic == "pH":
+            mqtt_data["pH"]=answer
+            
+        if topic == "fertility":
+            mqtt_data["fertility"]=answer
+            
+        if topic == "moisture":
+            mqtt_data["moisture"]=answer
+        # Process the incoming MQTT message here above
+        
+        url = 'http://localhost:5000/post_data'
+        # payload = {'temp': 10}
+        r = requests.post(url, json=mqtt_data)
+        print(r.text)
+        
+        
+    client.on_connect = on_connect
+    client.on_message = on_message
+    broker_address = "mqtt.eclipseprojects.io"  # Replace with your broker's address
+    client.connect(broker_address, 1883, 30)
+    
+    
+    
+    
+    # Start the MQTT subscriber loop
+    client.loop_forever()
+
+if __name__ == '__main__':
+    start_mqtt_subscriber()
+
+
+
+

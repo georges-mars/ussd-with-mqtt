@@ -4,6 +4,8 @@ import threading
 import paho.mqtt.client as mqtt
 import requests
 import json
+from mqtt_client import start_mqtt_subscriber
+
 app = Flask(__name__)
 
 import os
@@ -15,70 +17,16 @@ mqtt_data = {}
 
 def search_id(identity, unique):
     return identity in unique
-
-
-@app.route('/', methods=['POST', 'GET'])
-def start_mqtt_subscriber():
-    clientid="14"
-    client = mqtt.Client(client_id=clientid)
-
-    def on_connect(client, userdata, flags, rc):
-        print("XXXXXXXXX")
-        if rc == 0:
-            data = request.get_json()
-        # Perform an HTTP request
-            url = data.get('url')
-            response = requests.get(url)
-            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
-            client.subscribe("humidity",0)
-            client.subscribe("light",0)
-            client.subscribe("pH",0)
-            client.subscribe("fertility",0)
-            client.subscribe("moisture",0)
-            
-            print("Connected to MQTT broker")
-            
-        else:
-            print(f"Connection failed with code {rc}")
-    
-    def on_message(client, userdata, message):
-        
-        topic = message.topic
-        answer = json.loads(message.payload.decode())
-        #payload = message.payload.decode()
-        print(f"Received message on topic: {topic}, payload: {answer}")
-        if topic == "temp":
-            mqtt_data["temp"]="10"
-            
-        if topic == "humidity":
-            mqtt_data["humidity"]=answer
-            
-        if topic == "light":
-            mqtt_data["light"]=answer
-            
-        if topic == "pH":
-            mqtt_data["pH"]=answer
-            
-        if topic == "fertility":
-            mqtt_data["fertility"]=answer
-            
-        if topic == "moisture":
-            mqtt_data["moisture"]=answer
-        # Process the incoming MQTT message here above
-        
-        
-    client.on_connect = on_connect
-    client.on_message = on_message
-    broker_address = "test.mosquitto.org"  # Replace with your broker's address
-    client.connect(broker_address, 1883, 30)
-    
-    
-    
-    
-    # Start the MQTT subscriber loop
-    client.loop_forever()
          
 #///creating the methods of communiction
+@app.route('/post_data', methods=['POST', 'GET'])
+def post_data():
+    data = request.get_json()
+    mqtt_data["temp"]=data.get("temp")
+    print(mqtt_data)
+    return "Data posted"
+    
+    
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
     global response
