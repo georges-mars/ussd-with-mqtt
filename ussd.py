@@ -41,10 +41,7 @@ mqtt_client.on_message = on_message
 # Connect to MQTT broker
 mqtt_client.connect(mqtt_broker_address, mqtt_broker_port, 30)
 
-# Start the MQTT subscriber loop in a separate thread
-mqtt_thread = threading.Thread(target=mqtt_client.loop_forever)
-mqtt_thread.daemon = True
-mqtt_thread.start()
+
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -112,4 +109,8 @@ def get_parameter_name(choice):
 
 
 if __name__ == '__main__':
+    # Start the MQTT subscriber loop in a separate thread
+    mqtt_thread = threading.Thread(target=mqtt_client.loop_forever)
+    mqtt_thread.daemon = True
+    mqtt_thread.start()
     app.run(host="0.0.0.0", port=os.environ.get('PORT'))
