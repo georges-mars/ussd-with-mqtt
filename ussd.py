@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import threading
 import paho.mqtt.client as mqtt
-
+import os
 
 app = Flask(__name__)
 
@@ -41,7 +41,9 @@ mqtt_client.on_message = on_message
 # Connect to MQTT broker
 mqtt_client.connect(mqtt_broker_address, mqtt_broker_port, 30)
 
-
+mqtt_thread = threading.Thread(target=mqtt_client.loop_forever)
+mqtt_thread.daemon = True
+mqtt_thread.start()
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -110,7 +112,5 @@ def get_parameter_name(choice):
 
 if __name__ == '__main__':
     # Start the MQTT subscriber loop in a separate thread
-    mqtt_thread = threading.Thread(target=mqtt_client.loop_forever)
-    mqtt_thread.daemon = True
-    mqtt_thread.start()
-    app.run(host="0.0.0.0", port=10000)
+
+    app.run(host="0.0.0.0", port=os.environ.get('PORT'))
