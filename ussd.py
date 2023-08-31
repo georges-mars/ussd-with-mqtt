@@ -47,7 +47,7 @@ def start_mqtt_subscriber():
         #payload = message.payload.decode()
         print(f"Received message on topic: {topic}, payload: {answer}")
         if topic == "temp":
-            mqtt_data["temp"]=10
+            mqtt_data["temp"]="10"
             
         if topic == "humidity":
             mqtt_data["humidity"]=answer
