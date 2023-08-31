@@ -17,7 +17,7 @@ def search_id(identity, unique):
     return identity in unique
 
 
-
+@app.route('/', methods=['POST', 'GET'])
 def start_mqtt_subscriber():
     clientid="14"
     client = mqtt.Client(client_id=clientid)
