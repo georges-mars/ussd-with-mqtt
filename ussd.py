@@ -21,61 +21,62 @@ def search_id(identity, unique):
 def start_mqtt_subscriber():
     clientid="14"
     client = mqtt.Client(client_id=clientid)
-    
-    
-    
+
     def on_connect(client, userdata, flags, rc):
         if rc == 0:
-            
+            data = request.get_json()
+        # Perform an HTTP request
+            url = data.get('url')
+            response = requests.get(url)
             client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
             client.subscribe("humidity",0)
             client.subscribe("light",0)
             client.subscribe("pH",0)
             client.subscribe("fertility",0)
             client.subscribe("moisture",0)
+            
             print("Connected to MQTT broker")
+            
         else:
             print(f"Connection failed with code {rc}")
     
     def on_message(client, userdata, message):
+        
         topic = message.topic
-        payload = message.payload.decode()
-        print(f"Received message on topic: {topic}, payload: {payload}")
+        answer = json.loads(message.payload.decode())
+        #payload = message.payload.decode()
+        print(f"Received message on topic: {topic}, payload: {answer}")
         if topic == "temp":
-            mqtt_data["temp"]=payload
+            mqtt_data["temp"]=10
             
         if topic == "humidity":
-            mqtt_data["humidity"]=payload
+            mqtt_data["humidity"]=answer
             
         if topic == "light":
-            mqtt_data["light"]=payload
+            mqtt_data["light"]
             
         if topic == "pH":
-            mqtt_data["pH"]=payload
+            mqtt_data["pH"]=answer
             
         if topic == "fertility":
-            mqtt_data["fertility"]=payload
+            mqtt_data["fertility"]=answer
             
         if topic == "moisture":
-            mqtt_data["moisture"]=payload
-        # Process the incoming MQTT message here
+            mqtt_data["moisture"]=answer
+        # Process the incoming MQTT message here above
         
-    
-    broker_address = "test.mosquitto.org"  # Replace with your broker's address
-    client.connect(broker_address, 1883, 30)
-
+        
     client.on_connect = on_connect
     client.on_message = on_message
-   
+    broker_address = "test.mosquitto.org"  # Replace with your broker's address
+    client.connect(broker_address, 1883, 30)
     
     
     
     
     # Start the MQTT subscriber loop
     client.loop_forever()
-       
-
-    
+         
 #///creating the methods of communiction
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
@@ -121,7 +122,7 @@ def ussd_callback():
             response = "END Kindly stop lying and go buy the device."
         
     elif current_level== 4 and session_state[3] == '1':
-        if "temp" in mqtt_data:
+        if mqtt_data["temp"]:
             temperature = mqtt_data["temp"]
             response = f"END Your temperature is {temperature}"
         else:
@@ -186,9 +187,7 @@ def ussd_callback():
     
 
     return response
-
-    
-
+   
 #Receive response from africas talking
 @app.route('/call', methods=['POST'])
 def call_back_client():
