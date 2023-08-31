@@ -122,7 +122,7 @@ def ussd_callback():
             response = "END Kindly stop lying and go buy the device."
         
     elif current_level== 4 and session_state[3] == '1':
-        if mqtt_data["temp"]:
+        if "temp" in mqtt_data:
             temperature = mqtt_data["temp"]
             response = f"END Your temperature is {temperature}"
         else:
