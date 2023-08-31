@@ -53,7 +53,7 @@ def start_mqtt_subscriber():
             mqtt_data["humidity"]=answer
             
         if topic == "light":
-            mqtt_data["light"]
+            mqtt_data["light"]=answer
             
         if topic == "pH":
             mqtt_data["pH"]=answer
@@ -195,7 +195,7 @@ def call_back_client():
 
 
 if __name__ == '__main__':
-    mqtt_thread = threading.Thread(target=start_mqtt_subscriber())
+    mqtt_thread = threading.Thread(target=start_mqtt_subscriber)
     mqtt_thread.daemon = True  # Daemonize the thread so it exits when the main thread exits
     mqtt_thread.start()
     app.run(host="0.0.0.0", port=os.environ.get('PORT'))
