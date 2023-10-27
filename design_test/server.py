@@ -18,17 +18,23 @@ mqtt_data = {}
 def search_id(identity, unique):
     return identity in unique
          
-#///creating the methods of communiction
+#///creating the methods of communictionb
 @app.route('/post_data', methods=['POST', 'GET'])
 def post_data():
     data = request.get_json()
-    mqtt_data["temp"]=data.get("temp")
+    mqtt_data["temperature"]=data.get("temperature")
+    mqtt_data["humidity"]=data.get("humidity")
+    mqtt_data["light"]=data.get("light")
+    mqtt_data["pH"]=data.get("pH")
+    mqtt_data["fertility"]=data.get("fertility")
+    mqtt_data["moisture"]=data.get("moisture")
     print(mqtt_data)
     return "Data posted"
     
     
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
+    print ("connected to mqtt server")
     global response
     global mqtt_data
     session_id = request.values.get("sessionId", None)#/////getting the session id
@@ -71,8 +77,8 @@ def ussd_callback():
             response = "END Kindly stop lying and go buy the device."
         
     elif current_level== 4 and session_state[3] == '1':
-        if "temp" in mqtt_data:
-            temperature = mqtt_data["temp"]
+        if "temperature" in mqtt_data:
+            temperature = mqtt_data["temperature"]
             response = f"END Your temperature is {temperature}"
         else:
             response = "END Temperature data not available"
@@ -148,6 +154,7 @@ if __name__ == '__main__':
     mqtt_thread.daemon = True  # Daemonize the thread so it exits when the main thread exits
     mqtt_thread.start()
     app.run(host="0.0.0.0", port=os.environ.get('PORT'))
+ 
 
 
 

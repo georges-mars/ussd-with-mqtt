@@ -8,10 +8,11 @@ import json
 import os
 
 response = ""
-    
+######added now........unique = ['1','mars', 'elvis', 'Kori', 'brian','205', 'keith']    
 mqtt_data = {}
 
 def start_mqtt_subscriber():
+    #####i doubt whether this 2 lines of code are functional
     clientid="14"
     client = mqtt.Client(client_id=clientid)
 
@@ -21,13 +22,13 @@ def start_mqtt_subscriber():
         # Perform an HTTP request
             # url = data.get('url')
             # response = requests.get(url)
-            client.subscribe("temp",0)  # Subscribe to all topics under the client's ID
+            client.subscribe("temperature",0)  # Subscribe to all topics under the client's ID
             client.subscribe("humidity",0)
             client.subscribe("light",0)
             client.subscribe("pH",0)
             client.subscribe("fertility",0)
             client.subscribe("moisture",0)
-            client.subscribe("trial",0)
+            #client.subscribe("trial",0)
             
             print("Connected to MQTT broker")
             
@@ -40,13 +41,13 @@ def start_mqtt_subscriber():
         answer = message.payload.decode()
         #payload = message.payload.decode()
         print(f"Received message on topic: {topic}, payload: {answer}")
-        if topic == "temp":
-            mqtt_data["temp"]=answer
+        if topic == "temperature":
+            mqtt_data["temperature"]=answer
             
         if topic == "humidity":
             mqtt_data["humidity"]=answer
             
-        if topic == "light":
+        if topic == "light": 
             mqtt_data["light"]=answer
             
         if topic == "pH":
